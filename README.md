@@ -1,10 +1,14 @@
-📦 Check out my new library called [Vocal](https://github.com/seanghay/vocal) for **Vocal/Speech Separation** built with simplicity in mind.
+This project is a fork of the [[https://github.com/seanghay/uvr]](UVR CLI) project by seanghay.
 
 ---
 
-# Ultimate Vocal Remover CLI
+# Ultimate Ultimate Vocal Remover (uuvr)
 
 [[Colab]](https://colab.research.google.com/drive/1VDncdndceKanFrs2LU-LM4Odv8tnPkzD?usp=sharing)
+
+A command-line tool for separating an audio file into instrumental and vocal stems, using a pretrained `CascadedASPPNet` model (PyTorch). It's a thin inference wrapper around the `uvr5_pack` library extracted from the UVR5 project — no training code, just separation.
+
+`separate.py` holds the core inference logic (`_audio_pre_`), and `cli.py` is the command-line entry point that wires arguments to it. You can point it at a single audio file or a whole folder, and choose where the instrumental/vocal tracks get written.
 
 ⚠️ Before running this project, make sure you have installed `torch`, `torchaudio`. Please check out the PyTorch documentation.
 
@@ -27,18 +31,10 @@ pip install -r requirements.txt
 ## Separation
 
 ```shell
-python separate.py
+python cli.py <audio_path> [-o OUTPUT] [--vocal-dir NAME] [--instrumental-dir NAME] [-f FORMAT]
+python cli.py --input-dir <folder> [-o OUTPUT] [--vocal-dir NAME] [--instrumental-dir NAME] [-f FORMAT]
 ```
 
-[Modify these lines to fit your needs](https://github.com/seanghay/uvr/blob/fa19a9821d42586883202623936a0c8b895ae047/separate.py#L101-L108)
+Give it either a single `audio_path` or `--input-dir` to batch-process every audio file in a folder (mutually exclusive). `--output` sets the output directory (default `out`); `--vocal-dir`/`--instrumental-dir` are optional subfolder names created inside it — omit them to write both `instrument_<name>` and `vocal_<name>` directly into `--output`. `-f/--format` sets the output audio format: `wav` (default), `flac`, `mp3`, `ogg`, or `m4a`.
 
-```python 
-if __name__ == '__main__':
-    device = 'cuda'
-    is_half=True
-    model_path='uvr5_weights/2_HP-UVR.pth'
-    pre_fun = _audio_pre_(model_path=model_path,device=device,is_half=True)
-    audio_path = 'audio.aac'
-    save_path = 'opt'
-    pre_fun._path_audio_(audio_path , save_path,save_path)
-```
+`device`, `is_half`, and `model_path` are still hardcoded at the top of `cli.py`'s `main()` — edit them directly to change model/device.

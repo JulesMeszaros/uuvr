@@ -1,7 +1,10 @@
 import argparse
+import gc
 import os
 
-from separate import _audio_pre_
+import torch
+
+from separate import SUPPORTED_FORMATS, _audio_pre_
 
 AUDIO_EXTENSIONS = (".wav", ".mp3", ".flac", ".aac", ".m4a", ".ogg")
 
@@ -30,6 +33,13 @@ def _parse_args():
         "--instrumental-dir",
         default=None,
         help="Nom du sous-dossier pour l'instrumental, dans le dossier de sortie (défaut: directement dans le dossier de sortie)",
+    )
+    parser.add_argument(
+        "-f",
+        "--format",
+        default="wav",
+        choices=SUPPORTED_FORMATS,
+        help="Format des fichiers de sortie (défaut: wav)",
     )
     args = parser.parse_args()
     if not args.audio_path and not args.input_dir:
@@ -63,7 +73,14 @@ def main():
 
     pre_fun = _audio_pre_(model_path=model_path, device=device, is_half=is_half)
     for audio_path in audio_paths:
-        pre_fun._path_audio_(audio_path, instrumental_root, vocal_root)
+        pre_fun._path_audio_(
+            audio_path, instrumental_root, vocal_root, format=args.format
+        )
+        gc.collect()
+        if device == "mps":
+            torch.mps.empty_cache()
+        elif device == "cuda":
+            torch.cuda.empty_cache()
 
 
 if __name__ == "__main__":

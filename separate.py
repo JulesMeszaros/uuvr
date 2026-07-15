@@ -9,12 +9,28 @@ import numpy as np
 import importlib
 import librosa
 import os
+import subprocess
 import sys
 import torch
 import warnings
 import pdb
 
 warnings.filterwarnings("ignore")
+
+SUPPORTED_FORMATS = ("wav", "flac", "mp3", "ogg", "m4a")
+
+
+def _write_audio(path_no_ext, sr, samples, fmt):
+    wav_path = f"{path_no_ext}.wav"
+    wavfile.write(wav_path, sr, (np.array(samples) * 32768).astype("int16"))
+    if fmt == "wav":
+        return
+    out_path = f"{path_no_ext}.{fmt}"
+    subprocess.run(
+        ["ffmpeg", "-y", "-loglevel", "error", "-i", wav_path, out_path],
+        check=True,
+    )
+    os.remove(wav_path)
 
 
 class _audio_pre_:
@@ -64,9 +80,13 @@ class _audio_pre_:
         self.mp = mp
         self.model = model
 
-    def _path_audio_(self, music_file, ins_root=None, vocal_root=None):
+    def _path_audio_(self, music_file, ins_root=None, vocal_root=None, format="wav"):
         if ins_root is None and vocal_root is None:
             return "No save root."
+        if format not in SUPPORTED_FORMATS:
+            raise ValueError(
+                f"Format non supporté: {format} (supportés: {', '.join(SUPPORTED_FORMATS)})"
+            )
         name = os.path.basename(music_file)
         if ins_root is not None:
             os.makedirs(ins_root, exist_ok=True)
@@ -140,16 +160,11 @@ class _audio_pre_:
             else:
                 wav_instrument = spec_utils.cmb_spectrogram_to_wave(y_spec_m, self.mp)
             print("%s instruments done" % name)
-            wavfile.write(
-                os.path.join(
-                    ins_root,
-                    "instrument_{}.wav".format(
-                        #
-                        name
-                    ),
-                ),
+            _write_audio(
+                os.path.join(ins_root, "instrument_{}".format(name)),
                 self.mp.param["sr"],
-                (np.array(wav_instrument) * 32768).astype("int16"),
+                wav_instrument,
+                format,
             )
         if vocal_root is not None:
             if self.data["high_end_process"].startswith("mirroring"):
@@ -162,8 +177,9 @@ class _audio_pre_:
             else:
                 wav_vocals = spec_utils.cmb_spectrogram_to_wave(v_spec_m, self.mp)
             print("%s vocals done" % name)
-            wavfile.write(
-                os.path.join(vocal_root, "vocal_{}.wav".format(name)),
+            _write_audio(
+                os.path.join(vocal_root, "vocal_{}".format(name)),
                 self.mp.param["sr"],
-                (np.array(wav_vocals) * 32768).astype("int16"),
+                wav_vocals,
+                format,
             )
