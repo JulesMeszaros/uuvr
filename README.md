@@ -4,11 +4,13 @@ This project is a fork of the [UVR CLI](https://github.com/seanghay/uvr) project
 
 # Ultimate Ultimate Vocal Remover (uuvr)
 
-[[Colab]](https://colab.research.google.com/drive/1VDncdndceKanFrs2LU-LM4Odv8tnPkzD?usp=sharing)
+A command-line tool that separates an audio file into instrumental and vocal stems.
 
-A command-line tool for separating an audio file into instrumental and vocal stems, using a pretrained `CascadedASPPNet` model (PyTorch). It's a thin inference wrapper around the `uvr5_pack` library extracted from the UVR5 project — no training code, just separation.
-
-`src/uuvr/separate.py` holds the core inference logic (`_audio_pre_`), and `src/uuvr/cli.py` is the command-line entry point that wires arguments to it, installed as the `uuvr` command. You can point it at a single audio file or a whole folder, and choose where the instrumental/vocal tracks get written.
+- Process a single file, or a whole folder at once with `--input-dir`
+- Reads `.wav`, `.mp3`, `.flac`, `.aac`, `.m4a`, `.ogg`; writes output as `wav`, `flac`, `mp3`, `ogg`, or `m4a`
+- Auto-detects the best available device (CUDA, Apple Silicon MPS, or CPU) — no manual config needed
+- Model weights download automatically on first run and are cached locally
+- Choose where the instrumental and vocal tracks get written, with optional separate subfolders for each
 
 ## Installation
 
