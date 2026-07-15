@@ -10,23 +10,42 @@ A command-line tool for separating an audio file into instrumental and vocal ste
 
 `separate.py` holds the core inference logic (`_audio_pre_`), and `cli.py` is the command-line entry point that wires arguments to it. You can point it at a single audio file or a whole folder, and choose where the instrumental/vocal tracks get written.
 
-⚠️ Before running this project, make sure you have installed `torch`, `torchaudio`. Please check out the PyTorch documentation.
+## Installation
 
-⚠️ Also make sure you have `libsndfile` and `ffmpeg` installed.
+### 1. System dependencies
 
-⚠️ This project currently works on CUDA.
+- **[`ffmpeg`](https://ffmpeg.org/download.html)** — used both for decoding input audio and, when `--format` isn't `wav`, for encoding the output.
+- **[`libsndfile`](https://github.com/libsndfile/libsndfile)** — required by `soundfile`/`librosa` to read audio files.
 
-## Install dependencies
+On macOS with Homebrew:
+
+```shell
+brew install ffmpeg libsndfile
+```
+
+On Debian/Ubuntu:
+
+```shell
+sudo apt install ffmpeg libsndfile1
+```
+
+### 2. Python dependencies
 
 ```shell
 pip install -r requirements.txt
 ```
 
-## Download Model Weights
+`requirements.txt` does not pin `torch`/`torchaudio` — install the build that matches your hardware by following the [PyTorch install instructions](https://pytorch.org/get-started/locally/) (CUDA, MPS/Apple Silicon, or CPU-only).
+
+Inference runs on a hardcoded `device` set at the top of `cli.py`'s `main()` (`"cuda"`, `"mps"`, or `"cpu"`) — make sure the PyTorch build you install actually supports it, and edit that value to match your hardware.
+
+### 3. Model weights
 
 ```shell
 ./download.sh
 ```
+
+Fetches `uvr5_weights/2_HP-UVR.pth` if it isn't already present.
 
 ## Usage
 
