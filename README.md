@@ -37,7 +37,7 @@ pip install -r requirements.txt
 
 `requirements.txt` does not pin `torch`/`torchaudio` — install the build that matches your hardware by following the [PyTorch install instructions](https://pytorch.org/get-started/locally/) (CUDA, MPS/Apple Silicon, or CPU-only).
 
-Inference runs on a hardcoded `device` set at the top of `cli.py`'s `main()` (`"cuda"`, `"mps"`, or `"cpu"`) — make sure the PyTorch build you install actually supports it, and edit that value to match your hardware.
+The device is auto-detected at runtime (`cuda` > `mps` > `cpu`, see `--device` in [Usage](#usage)) — just make sure the PyTorch build you install actually supports the hardware you want to use.
 
 ### 3. Model weights
 
@@ -62,6 +62,7 @@ python cli.py --input-dir <folder> [-o OUTPUT] [--vocal-dir NAME] [--instrumenta
 | `--vocal-dir <name>` | Optional subfolder name, created inside `--output`, for the vocal track. Omit to write it directly into `--output`. |
 | `--instrumental-dir <name>` | Optional subfolder name, created inside `--output`, for the instrumental track. Omit to write it directly into `--output`. |
 | `-f, --format <fmt>` | Output audio format: `wav` (default), `flac`, `mp3`, `ogg`, or `m4a`. Anything other than `wav` requires `ffmpeg`. |
+| `--device <dev>` | `auto` (default, picks `cuda` > `mps` > `cpu`), or force `cuda`/`mps`/`cpu`. |
 
 Output files are named `instrument_<name>.<format>` and `vocal_<name>.<format>`.
 
@@ -70,6 +71,7 @@ Examples:
 ```shell
 python cli.py 360.aac -o out --format flac
 python cli.py --input-dir my_songs --vocal-dir vocals --instrumental-dir instru
+python cli.py 360.aac --device cpu
 ```
 
-`device`, `is_half`, and `model_path` are still hardcoded at the top of `cli.py`'s `main()` — edit them directly to change model/device.
+`is_half` and `model_path` are still hardcoded at the top of `cli.py`'s `main()` — edit them directly to change model/precision.

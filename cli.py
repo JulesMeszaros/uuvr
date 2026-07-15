@@ -9,6 +9,14 @@ from separate import SUPPORTED_FORMATS, _audio_pre_
 AUDIO_EXTENSIONS = (".wav", ".mp3", ".flac", ".aac", ".m4a", ".ogg")
 
 
+def _detect_device():
+    if torch.cuda.is_available():
+        return "cuda"
+    if torch.backends.mps.is_available():
+        return "mps"
+    return "cpu"
+
+
 def _parse_args():
     parser = argparse.ArgumentParser(
         description="Sépare un fichier audio en pistes instrumentale et vocale."
@@ -41,6 +49,12 @@ def _parse_args():
         choices=SUPPORTED_FORMATS,
         help="Format des fichiers de sortie (défaut: wav)",
     )
+    parser.add_argument(
+        "--device",
+        default="auto",
+        choices=["auto", "cuda", "mps", "cpu"],
+        help="Device à utiliser (défaut: auto, détecte cuda puis mps puis cpu)",
+    )
     args = parser.parse_args()
     if not args.audio_path and not args.input_dir:
         parser.error("il faut fournir audio_path ou --input-dir")
@@ -50,10 +64,11 @@ def _parse_args():
 
 
 def main():
-    device = "mps"
     is_half = False
     model_path = "uvr5_weights/2_HP-UVR.pth"
     args = _parse_args()
+    device = _detect_device() if args.device == "auto" else args.device
+    print(f"Device: {device}")
     vocal_root = (
         os.path.join(args.output, args.vocal_dir) if args.vocal_dir else args.output
     )
