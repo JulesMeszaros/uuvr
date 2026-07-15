@@ -191,3 +191,13 @@ Temporary Items
 opt/
 models/
 models.zip
+
+#Audio files
+*.mp3
+*.ogg
+*.aac
+*.flac
+*.wav
+
+#Shamefull files
+Claude.MD
