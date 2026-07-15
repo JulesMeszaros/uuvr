@@ -1,4 +1,4 @@
-This project is a fork of the [[https://github.com/seanghay/uvr]](UVR CLI) project by seanghay.
+This project is a fork of the [UVR CLI](https://github.com/seanghay/uvr) project by seanghay.
 
 ---
 
