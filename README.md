@@ -28,13 +28,29 @@ pip install -r requirements.txt
 ./download.sh
 ```
 
-## Separation
+## Usage
 
 ```shell
 python cli.py <audio_path> [-o OUTPUT] [--vocal-dir NAME] [--instrumental-dir NAME] [-f FORMAT]
 python cli.py --input-dir <folder> [-o OUTPUT] [--vocal-dir NAME] [--instrumental-dir NAME] [-f FORMAT]
 ```
 
-Give it either a single `audio_path` or `--input-dir` to batch-process every audio file in a folder (mutually exclusive). `--output` sets the output directory (default `out`); `--vocal-dir`/`--instrumental-dir` are optional subfolder names created inside it — omit them to write both `instrument_<name>` and `vocal_<name>` directly into `--output`. `-f/--format` sets the output audio format: `wav` (default), `flac`, `mp3`, `ogg`, or `m4a`.
+| Argument | Description |
+| --- | --- |
+| `audio_path` | Single audio file to separate. Mutually exclusive with `--input-dir`. |
+| `--input-dir <folder>` | Batch-process every audio file (`.wav`, `.mp3`, `.flac`, `.aac`, `.m4a`, `.ogg`) found in this folder. Mutually exclusive with `audio_path`. |
+| `-o, --output <dir>` | Output directory (default: `out`). |
+| `--vocal-dir <name>` | Optional subfolder name, created inside `--output`, for the vocal track. Omit to write it directly into `--output`. |
+| `--instrumental-dir <name>` | Optional subfolder name, created inside `--output`, for the instrumental track. Omit to write it directly into `--output`. |
+| `-f, --format <fmt>` | Output audio format: `wav` (default), `flac`, `mp3`, `ogg`, or `m4a`. Anything other than `wav` requires `ffmpeg`. |
+
+Output files are named `instrument_<name>.<format>` and `vocal_<name>.<format>`.
+
+Examples:
+
+```shell
+python cli.py 360.aac -o out --format flac
+python cli.py --input-dir my_songs --vocal-dir vocals --instrumental-dir instru
+```
 
 `device`, `is_half`, and `model_path` are still hardcoded at the top of `cli.py`'s `main()` — edit them directly to change model/device.
