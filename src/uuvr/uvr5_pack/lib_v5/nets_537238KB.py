@@ -1,9 +1,9 @@
 import torch
+import numpy as np
 from torch import nn
 import torch.nn.functional as F
 
-from uvr5_pack.lib_v5 import layers
-from uvr5_pack.lib_v5 import spec_utils
+from uuvr.uvr5_pack.lib_v5 import layers_537238KB as layers
 
 
 class BaseASPPNet(nn.Module):
@@ -42,18 +42,18 @@ class CascadedASPPNet(nn.Module):
 
     def __init__(self, n_fft):
         super(CascadedASPPNet, self).__init__()
-        self.stg1_low_band_net = BaseASPPNet(2, 16)
-        self.stg1_high_band_net = BaseASPPNet(2, 16)
+        self.stg1_low_band_net = BaseASPPNet(2, 64)
+        self.stg1_high_band_net = BaseASPPNet(2, 64)
 
-        self.stg2_bridge = layers.Conv2DBNActiv(18, 8, 1, 1, 0)
-        self.stg2_full_band_net = BaseASPPNet(8, 16)
+        self.stg2_bridge = layers.Conv2DBNActiv(66, 32, 1, 1, 0)
+        self.stg2_full_band_net = BaseASPPNet(32, 64)
 
-        self.stg3_bridge = layers.Conv2DBNActiv(34, 16, 1, 1, 0)
-        self.stg3_full_band_net = BaseASPPNet(16, 32)
+        self.stg3_bridge = layers.Conv2DBNActiv(130, 64, 1, 1, 0)
+        self.stg3_full_band_net = BaseASPPNet(64, 128)
 
-        self.out = nn.Conv2d(32, 2, 1, bias=False)
-        self.aux1_out = nn.Conv2d(16, 2, 1, bias=False)
-        self.aux2_out = nn.Conv2d(16, 2, 1, bias=False)
+        self.out = nn.Conv2d(128, 2, 1, bias=False)
+        self.aux1_out = nn.Conv2d(64, 2, 1, bias=False)
+        self.aux2_out = nn.Conv2d(64, 2, 1, bias=False)
 
         self.max_bin = n_fft // 2
         self.output_bin = n_fft // 2 + 1
@@ -96,7 +96,7 @@ class CascadedASPPNet(nn.Module):
                 pad=(0, 0, 0, self.output_bin - aux2.size()[2]),
                 mode='replicate')
             return mask * mix, aux1 * mix, aux2 * mix
-        else:       
+        else:
             if aggressiveness:
                 mask[:, :, :aggressiveness['split_bin']] = torch.pow(mask[:, :, :aggressiveness['split_bin']], 1 + aggressiveness['value'] / 3)
                 mask[:, :, aggressiveness['split_bin']:] = torch.pow(mask[:, :, aggressiveness['split_bin']:], 1 + aggressiveness['value'])

@@ -1,9 +1,9 @@
 import math
 import hashlib
-from uvr5_pack.utils import _get_name_params, inference
+from uuvr.uvr5_pack.utils import _get_name_params, inference
 from scipy.io import wavfile
-from uvr5_pack.lib_v5.model_param_init import ModelParameters
-from uvr5_pack.lib_v5 import spec_utils
+from uuvr.uvr5_pack.lib_v5.model_param_init import ModelParameters
+from uuvr.uvr5_pack.lib_v5 import spec_utils
 from tqdm import tqdm
 import numpy as np
 import importlib
@@ -60,7 +60,7 @@ class _audio_pre_:
             min(nn_arch_sizes, key=lambda x: abs(x - model_size))
         )
         nets = importlib.import_module(
-            "uvr5_pack.lib_v5.nets"
+            "uuvr.uvr5_pack.lib_v5.nets"
             + f"_{nn_architecture}".replace("_{}KB".format(nn_arch_sizes[0]), ""),
             package=None,
         )

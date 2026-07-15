@@ -3,7 +3,7 @@ import numpy as np
 from torch import nn
 import torch.nn.functional as F
 
-from uvr5_pack.lib_v5 import layers_537238KB as layers
+from uuvr.uvr5_pack.lib_v5 import layers_537238KB as layers
 
 
 class BaseASPPNet(nn.Module):

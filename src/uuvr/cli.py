@@ -4,7 +4,8 @@ import os
 
 import torch
 
-from separate import SUPPORTED_FORMATS, _audio_pre_
+from .separate import SUPPORTED_FORMATS, _audio_pre_
+from .weights import ensure_weights
 
 AUDIO_EXTENSIONS = (".wav", ".mp3", ".flac", ".aac", ".m4a", ".ogg")
 
@@ -65,8 +66,8 @@ def _parse_args():
 
 def main():
     is_half = False
-    model_path = "uvr5_weights/2_HP-UVR.pth"
     args = _parse_args()
+    model_path = str(ensure_weights())
     device = _detect_device() if args.device == "auto" else args.device
     print(f"Device: {device}")
     vocal_root = (

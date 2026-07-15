@@ -1,0 +1,33 @@
+[build-system]
+requires = ["setuptools>=68"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "uuvr"
+version = "0.1.0"
+description = "Ultimate Ultimate Vocal Remover — CLI for separating audio into instrumental/vocal stems"
+readme = "README.md"
+requires-python = ">=3.10"
+dependencies = [
+    "numpy==1.23.5",
+    "scipy==1.9.3",
+    "librosa==0.9.1",
+    "numba==0.56.4",
+    "llvmlite==0.39.0",
+    "tqdm>=4.63.1",
+    "soundfile>=0.12.1",
+]
+# torch/torchaudio volontairement absents : spécifiques à la plateforme/GPU,
+# installation manuelle recommandée (voir README).
+
+[project.urls]
+Repository = "https://github.com/JulesMeszaros/uuvr"
+
+[project.scripts]
+uuvr = "uuvr.cli:main"
+
+[tool.setuptools.packages.find]
+where = ["src"]
+
+[tool.setuptools.package-data]
+uuvr = ["uvr5_pack/lib_v5/modelparams/*.json"]

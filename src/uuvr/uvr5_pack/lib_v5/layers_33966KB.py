@@ -2,7 +2,7 @@ import torch
 from torch import nn
 import torch.nn.functional as F
 
-from uvr5_pack.lib_v5 import spec_utils
+from uuvr.uvr5_pack.lib_v5 import spec_utils
 
 
 class Conv2DBNActiv(nn.Module):

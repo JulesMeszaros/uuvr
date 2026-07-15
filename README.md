@@ -8,7 +8,7 @@ This project is a fork of the [[https://github.com/seanghay/uvr]](UVR CLI) proje
 
 A command-line tool for separating an audio file into instrumental and vocal stems, using a pretrained `CascadedASPPNet` model (PyTorch). It's a thin inference wrapper around the `uvr5_pack` library extracted from the UVR5 project — no training code, just separation.
 
-`separate.py` holds the core inference logic (`_audio_pre_`), and `cli.py` is the command-line entry point that wires arguments to it. You can point it at a single audio file or a whole folder, and choose where the instrumental/vocal tracks get written.
+`src/uuvr/separate.py` holds the core inference logic (`_audio_pre_`), and `src/uuvr/cli.py` is the command-line entry point that wires arguments to it, installed as the `uuvr` command. You can point it at a single audio file or a whole folder, and choose where the instrumental/vocal tracks get written.
 
 ## Installation
 
@@ -29,29 +29,27 @@ On Debian/Ubuntu:
 sudo apt install ffmpeg libsndfile1
 ```
 
-### 2. Python dependencies
+### 2. Install the package
 
 ```shell
-pip install -r requirements.txt
+pip install -e .
+# or, without cloning:
+pip install git+https://github.com/JulesMeszaros/uuvr
 ```
 
-`requirements.txt` does not pin `torch`/`torchaudio` — install the build that matches your hardware by following the [PyTorch install instructions](https://pytorch.org/get-started/locally/) (CUDA, MPS/Apple Silicon, or CPU-only).
+This does not pin `torch`/`torchaudio` — install the build that matches your hardware by following the [PyTorch install instructions](https://pytorch.org/get-started/locally/) (CUDA, MPS/Apple Silicon, or CPU-only).
 
 The device is auto-detected at runtime (`cuda` > `mps` > `cpu`, see `--device` in [Usage](#usage)) — just make sure the PyTorch build you install actually supports the hardware you want to use.
 
 ### 3. Model weights
 
-```shell
-./download.sh
-```
-
-Fetches `uvr5_weights/2_HP-UVR.pth` if it isn't already present.
+Downloaded automatically to `~/.cache/uuvr/2_HP-UVR.pth` the first time you run `uuvr` — no manual step needed.
 
 ## Usage
 
 ```shell
-python cli.py <audio_path> [-o OUTPUT] [--vocal-dir NAME] [--instrumental-dir NAME] [-f FORMAT]
-python cli.py --input-dir <folder> [-o OUTPUT] [--vocal-dir NAME] [--instrumental-dir NAME] [-f FORMAT]
+uuvr <audio_path> [-o OUTPUT] [--vocal-dir NAME] [--instrumental-dir NAME] [-f FORMAT]
+uuvr --input-dir <folder> [-o OUTPUT] [--vocal-dir NAME] [--instrumental-dir NAME] [-f FORMAT]
 ```
 
 | Argument | Description |
@@ -69,9 +67,9 @@ Output files are named `instrument_<name>.<format>` and `vocal_<name>.<format>`.
 Examples:
 
 ```shell
-python cli.py 360.aac -o out --format flac
-python cli.py --input-dir my_songs --vocal-dir vocals --instrumental-dir instru
-python cli.py 360.aac --device cpu
+uuvr 360.aac -o out --format flac
+uuvr --input-dir my_songs --vocal-dir vocals --instrumental-dir instru
+uuvr 360.aac --device cpu
 ```
 
-`is_half` and `model_path` are still hardcoded at the top of `cli.py`'s `main()` — edit them directly to change model/precision.
+`is_half` is still hardcoded at the top of `cli.py`'s `main()` — edit it directly to change precision.
